@@ -1,5 +1,11 @@
 <?php
 
+use App\Livewire\AddCar;
+use App\Livewire\CarsList;
+use App\Livewire\EditCar;
+use App\Livewire\Login;
+use App\Livewire\Profile;
+use App\Livewire\Register;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,4 +19,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'home')->name('home');
+Route::group(['middleware' => 'guest'], function () {
+  Route::get('/login', Login::class)->name('login');
+  Route::get('/register', Register::class);
+});
+
+Route::group(['middleware' => 'auth'], function () {
+  Route::view('/', 'home')->name('home');
+  Route::get('/profile', Profile::class);
+  Route::get('/cars', CarsList::class);
+  Route::get('/addcar', AddCar::class);
+  Route::get('/editcar/{number_plate}', EditCar::class);
+});
