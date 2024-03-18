@@ -16,7 +16,7 @@ class CarsList extends Component
     public $search;
     public Car $selectedCar;
 
-    public $editingCarId;
+    public $editingCarId = null;
 
     #[Validate('required')]
     public $editingCarBrand;
@@ -30,16 +30,22 @@ class CarsList extends Component
     #[Validate('required')]
     public $editingCarPricePerDay;
 
+    public $current;
+
 
     public function updatingSearch()
     {
         $this->resetPage();
     }
 
-    public function edit($carId)
+    public function edit(Car $carId)
     {
-        $this->editingCarId = $carId;
-        $this->editingCarBrand = Car::find($carId)->name;
+        // dd($carId->brand);
+        $this->editingCarId = $carId->id;
+        $this->editingCarBrand = $carId->brand;
+        $this->editingCarModel = $carId->model;
+        $this->editingCarNumberPlate = $carId->number_plate;
+        $this->editingCarPricePerDay = $carId->price_perday;
     }
 
     public function delete(Car $car)
@@ -52,26 +58,21 @@ class CarsList extends Component
 
     public function update()
     {
-        // dd($this->editingCarBrand);
-        // try {
-            $validated = $this->validate();
-            Car::find($this->editingCarId)->update([
-                'brand' => $this->editingCarBrand,
-                'model' => $this->editingCarModel,
-                'number_plate' => $this->editingCarNumberPlate,
-                'price_perday' => $this->editingCarPricePerDay
-            ]);
+        $validated = $this->validate();
+        Car::find($this->editingCarId)->update([
+            'brand' => $this->editingCarBrand,
+            'model' => $this->editingCarModel,
+            'number_plate' => $this->editingCarNumberPlate,
+            'price_perday' => $this->editingCarPricePerDay
+        ]);
 
-            session()->flash('updated', 'Data berhasil di update!');
-            $this->cancelEdit();
-        // } catch (\Exception $e) {
-            // dd($e);
-        // }
+        session()->flash('updated', 'Data berhasil di update!');
+        $this->cancelEdit();
     }
 
     public function cancelEdit()
     {
-        $this->reset('editingCarId', 'editingCarBrand', 'editingCarModel', 'editingCarNumberPlate', 'editingCarPricePerDay');
+        $this->reset('editingCarId');
     }
 
     public function render()
